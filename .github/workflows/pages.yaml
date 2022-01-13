@@ -1,0 +1,27 @@
+name: Publish
+
+on: [push]
+
+jobs:
+  all:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Node
+        uses: actions/setup-node@v2
+      - name: Setup
+        run: |
+          npm install
+      - name: Linting
+        run: |
+          npm run lint
+      - name: Build
+        run: |
+          npm run build
+      - name: Deploy to GitHub Pages
+        uses: crazy-max/ghaction-github-pages@v2
+        with:
+          build_dir: dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

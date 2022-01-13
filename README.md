@@ -1,4 +1,4 @@
-# dayspan-vuetify-example
+# ics-viewer
 
 ## Project setup
 ```

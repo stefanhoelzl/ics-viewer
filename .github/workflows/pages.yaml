@@ -13,14 +13,12 @@ jobs:
       - name: Setup
         run: |
           npm install
-      - name: Linting
-        run: |
-          npm run lint
       - name: Build
         run: |
           npm run build
       - name: Deploy to GitHub Pages
         uses: crazy-max/ghaction-github-pages@v2
+        if: ${{ github.ref == 'refs/heads/master' }}
         with:
           build_dir: dist
         env:

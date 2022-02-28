@@ -81,7 +81,7 @@ export default {
 		if (window.location.search != search) {
 			window.location.search = search
 		}
-		const url = "https://larrybolt-cors-anywhere.herokuapp.com/" + ics
+		const url = "https://cors-anywhere.herokuapp.com/" + ics
 		axios.defaults.headers["Access-Control-Allow-Origin"] = "*"
 		axios.defaults.headers["Content-Type"] = "application/x-www-form-urlencoded"
 		axios.get(url).then((response) => {

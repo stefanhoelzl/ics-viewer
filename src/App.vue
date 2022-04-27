@@ -31,7 +31,6 @@ import "../node_modules/vue-simple-calendar/dist/style.css"
 import "../node_modules/vue-simple-calendar/static/css/default.css"
 import "../node_modules/vue-simple-calendar/static/css/holidays-us.css"
 
-import axios from "axios"
 import ICAL from "ical.js"
 
 import { CalendarView, CalendarViewHeader, CalendarMath } from "vue-simple-calendar"
@@ -81,21 +80,19 @@ export default {
 		if (window.location.search != search) {
 			window.location.search = search
 		}
-		const url = "https://larrybolt-cors-anywhere.herokuapp.com/" + ics
-		axios.defaults.headers["Access-Control-Allow-Origin"] = "*"
-		axios.defaults.headers["Content-Type"] = "application/x-www-form-urlencoded"
-		axios.get(url).then((response) => {
-			const vcalendar = new ICAL.Component(ICAL.parse(response.data))
-			this.items = Array.from(vcalendar.getAllSubcomponents("vevent"), (vevent, id) => {
-				var event = new ICAL.Event(vevent)
-				return {
-					id: "event" + id,
-					startDate: event.startDate.toString(),
-					endDate: event.endDate.toString(),
-					title: event.summary,
-				}
+		this.tryFetch(ics)
+			.then((data) => {
+				const vcalendar = new ICAL.Component(ICAL.parse(data))
+				this.items = Array.from(vcalendar.getAllSubcomponents("vevent"), (vevent, id) => {
+					var event = new ICAL.Event(vevent)
+					return {
+						id: "event" + id,
+						startDate: event.startDate.toString(),
+						endDate: event.endDate.toString(),
+						title: event.summary,
+					}
+				})
 			})
-		})
 	},
 
 	methods: {
@@ -109,6 +106,30 @@ export default {
 		onClickItem(e) {
 			this.message = e.title
 		},
+		async fetch(url) {
+			const response = await fetch(url);
+			if(!response.ok) {
+				throw response.status;
+			}
+			return await response.text()
+		},
+		async thingproxy(url) {
+			return await this.fetch("https://thingproxy.freeboard.io/fetch/" + url)
+		},
+		async allorigins(url) {
+			const data = await this.fetch("https://api.allorigins.win/get?url=" + url)
+			return JSON.parse(data).contents;
+		},
+		async tryFetch(url) {
+			const services = [this.thingproxy, this.allorigins];
+			for (const service of services) {
+				try {
+					return await service(url)
+				} catch(error) {
+					console.log(error);
+				}
+			}
+		}
 	},
 }
 </script>

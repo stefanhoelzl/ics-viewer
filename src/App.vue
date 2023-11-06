@@ -117,8 +117,7 @@ export default {
 			return await this.fetch("https://thingproxy.freeboard.io/fetch/" + url)
 		},
 		async allorigins(url) {
-			const data = await this.fetch("https://api.allorigins.win/get?url=" + url)
-			return JSON.parse(data).contents;
+			return await this.fetch("https://api.allorigins.win/raw?url=" + url)
 		},
 		async tryFetch(url) {
 			const services = [this.thingproxy, this.allorigins];
